@@ -4,7 +4,7 @@ let r;
 let x1, x2, x3, x4, y1, y2, y3, y4;
 let c1, c2, c3, c4;
 let ImagenActual = 3;
-
+let numero;
 let caminantes = [];
 
 function preload() {
@@ -17,9 +17,9 @@ function preload() {
 function setup() {
   createCanvas(594, 869);
 
-  x1 = 150;
-  x2 = 400;
-  x3 = 400;
+  x1 = random(0, 200);
+  x2 = random(200, 500);
+  x3 = random(200, 500);
   x4 = 150;
 
   y1 = 300;
@@ -32,6 +32,8 @@ function setup() {
   c3 = new Caminante(x3, y3);
   c4 = new Caminante(x4, y4);
 
+  numero = random(2, 5);
+
   caminantes = [c1, c2, c3, c4];
 
   r = 25;
@@ -43,8 +45,18 @@ function draw() {
   imageMode(CENTER);
   image(figuras[ImagenActual], width / 2, height / 2);
   pop();
+
   push();
-  strokeWeight(20);
+  strokeWeight(35);
+  stroke(129, 166, 202);
+  line(c1.x - r, c1.y - r + numero, c2.x + r, c2.y - r + numero);
+  line(c2.x + r, c2.y - r + numero, c3.x + r, c3.y + r + numero);
+  line(c3.x + r, c3.y + r + numero, c4.x - r, c4.y + r + numero);
+  line(c4.x - r, c4.y + r + numero, c1.x - r, c1.y - r + numero);
+  pop();
+
+  push();
+  strokeWeight(35);
   line(c1.x - r, c1.y - r, c2.x + r, c2.y - r);
   line(c2.x + r, c2.y - r, c3.x + r, c3.y + r);
   line(c3.x + r, c3.y + r, c4.x - r, c4.y + r);

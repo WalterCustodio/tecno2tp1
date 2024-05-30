@@ -7,7 +7,9 @@ class Caminante {
     this.dir = 0;
   }
 
-  dibujar() {}
+  dibujar() {
+    //ellipse(this.x, this.y, 50, 50);
+  }
 
   mover() {
     let anguloMouse = atan2(mouseY - this.y, mouseX - this.x);
