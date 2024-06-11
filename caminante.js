@@ -8,7 +8,7 @@ class Caminante {
   }
 
   dibujar() {
-    //ellipse(this.x, this.y, 50, 50);
+    ellipse(this.x, this.y, 50, 50);
   }
 
   mover() {
@@ -20,6 +20,9 @@ class Caminante {
     let dy = this.vel * sin(this.dir);
     this.x += dx;
     this.y += dy;
+
+    this.x = constrain(this.x, 0, width-50);
+    this.y = constrain(this.y, 0, height-50);
 
     this.repulsion(caminantes);
   }
@@ -36,6 +39,9 @@ class Caminante {
 
           this.x += fuerza * cos(angulo);
           this.y += fuerza * sin(angulo);
+
+          this.x = constrain(this.x, 0 +120, width-120);
+          this.y = constrain(this.y, 0 +150, height-150);
         }
       }
     }
