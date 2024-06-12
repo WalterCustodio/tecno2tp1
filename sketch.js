@@ -4,6 +4,28 @@ let r;
 let numero;
 let caminantes = []; // Única declaración de caminantes
 
+let IMPRIMIR = true;
+
+let mic;
+let amp;
+let pitch;
+let audioCotext;
+
+let haySonido = false;
+let antesHabiaSonido; // moemoria del estado anterior del sonido
+
+//----CONFIGURACION-----
+let AMP_MIN = 0.02; // umbral mínimo de sonido qiu supera al ruido de fondo
+let AMP_MAX = 0.2; // amplitud máxima del sonido
+
+let AMORTIGUACION = 0.9; // factor de amortiguación de la señal
+
+let FREC_MIN = 200;
+let FREC_MAX = 400;
+
+let gestorAmp;
+let gestorPitch;
+
 const model_url = "https://teachablemachine.withgoogle.com/models/afb0-_yXm/";
 
 function preload() {
@@ -24,6 +46,25 @@ function setup() {
     let x = centerX + cos(angle) * radius;
     let y = centerY + sin(angle) * radius;
     caminantes.push(new Caminante(x, y));
+
+    //----MICROFONO-----
+    mic = new p5.AudioIn(); // objeto que se comunica con la enrada de micrófono
+    mic.start(); // se inicia el flujo de audio
+    mic.start(startPitch);
+    //----GESTOR----
+    gestorAmp = new GestorSenial(AMP_MIN, AMP_MAX); // inicilizo en goestor con los umbrales mínimo y máximo de la señal
+
+    gestorAmp.f = AMORTIGUACION;
+
+    audioContext = getAudioContext(); // inicia el motor de audio
+
+    //------MOTOR DE AUDIO-----
+    userStartAudio(); // esto lo utilizo porque en algunos navigadores se cuelga el audio. Esto hace un reset del motor de audio (audio context)
+
+    gestorAmp = new GestorSenial(AMP_MIN, AMP_MAX);
+    gestorPitch = new GestorSenial(FREC_MIN, FREC_MAX);
+
+    antesHabiaSonido = false;
   }
 
   numero = random(2, 5);
@@ -34,6 +75,14 @@ function setup() {
 }
 
 function draw() {
+  gestorAmp.actualizar(mic.getLevel());
+
+  amp = gestorAmp.filtrada;
+
+  haySonido = amp > AMP_MIN;
+  let vol = mic.getLevel(); // cargo en vol la amplitud del micrófono (señal cruda);
+  gestorAmp.actualizar(vol);
+
   background(textura_papel);
 
   push();
@@ -58,6 +107,10 @@ function draw() {
 
   // Actualizar puntos de control lentamente
   updateControlPoints();
+
+  if (IMPRIMIR) {
+    printData();
+  }
 }
 
 function initializeControlPoints() {
@@ -94,6 +147,42 @@ function drawBezierCurve(c1, c2, index) {
   pop();
 }
 
+function startPitch() {
+  pitch = ml5.pitchDetection(model_url, audioContext, mic.stream, modelLoaded);
+}
+
+function modelLoaded() {
+  getPitch();
+}
+
+function getPitch() {
+  pitch.getPitch(function (err, frequency) {
+    if (frequency) {
+      //console.log(frequency);
+      gestorPitch.actualizar(frequency);
+      //console.log(frequency);
+    }
+    getPitch();
+  });
+}
+
+function printData() {
+  background(255);
+  push();
+  textSize(16);
+  fill(0);
+  let texto;
+
+  texto = "amplitud: " + amp;
+  text(texto, 20, 20);
+
+  fill(0);
+  ellipse(width / 2, height - amp * 300, 30, 30);
+
+  pop();
+
+  gestorAmp.dibujar(100, 500);
+}
 //function mouseClicked() {
 //  ImagenActual++;
 //
