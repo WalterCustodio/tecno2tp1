@@ -1,31 +1,18 @@
 let textura_papel;
+let controlPoints = [];
 let r;
 let numero;
-let caminantes = [];
-let controlPoints = [];
-let ImagenActual = 3;
-// let sound;
-let capaFondo1;
+let caminantes = []; // Única declaración de caminantes
 
-let trazos = [];
-
-let nombrestrazo = [
-  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 18, 26, 28, 30, 31, 32, 38, 39, 45, 49,
-];
+const model_url = "https://teachablemachine.withgoogle.com/models/afb0-_yXm/";
 
 function preload() {
-  for (let i = 0; i < nombrestrazo.length; i++) {
-    let nombre = "imagenes/manchas/layer " + nf(nombrestrazo[i], 2) + ".png";
-    trazos[i] = loadImage(nombre);
-  }
   textura_papel = loadImage("imagenes/textura_fondo.png");
-  // sound = loadSound("sonidos/mi_sonido.mp3"); // Asegúrate de que el archivo de sonido esté en la carpeta correcta
+  //  sound = loadSound("sonidos/mi_sonido.mp3"); // Asegúrate de que el archivo de sonido esté en la carpeta correcta
 }
 
 function setup() {
   createCanvas(594, 869);
-
-  capaFondo = createGraphics(int(width * 1.2), int(height * 1.2));
 
   let numCaminantes = 3;
   let radius = 150;
@@ -40,7 +27,7 @@ function setup() {
   }
 
   numero = random(2, 5);
-  r = 25;
+  //r = 25;
 
   // Inicializar puntos de control
   initializeControlPoints();
@@ -107,16 +94,16 @@ function drawBezierCurve(c1, c2, index) {
   pop();
 }
 
-function mouseClicked() {
-  ImagenActual++;
-
-  if (ImagenActual >= figuras.length) {
-    ImagenActual = 0;
-  }
-
-  //  if (sound.isPlaying()) {
-  //    sound.stop();
-  //  } else {
-  //    sound.play();
-  //  }
-}
+//function mouseClicked() {
+//  ImagenActual++;
+//
+//  if (ImagenActual >= figuras.length) {
+//    ImagenActual = 0;
+//  }
+//
+//  if (sound.isPlaying()) {
+//    sound.stop();
+//  } else {
+//    sound.play();
+//  }
+//}
