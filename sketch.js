@@ -4,19 +4,19 @@ let r;
 let numero;
 let caminantes = []; // Única declaración de caminantes
 
-let IMPRIMIR = true;
+let IMPRIMIR = false;
 
 let mic;
 let amp;
 let pitch;
-let audioCotext;
+let audioContext;
 
 let haySonido = false;
-let antesHabiaSonido; // moemoria del estado anterior del sonido
+let antesHabiaSonido; // memoria del estado anterior del sonido
 
 //----CONFIGURACION-----
-let AMP_MIN = 0.02; // umbral mínimo de sonido qiu supera al ruido de fondo
-let AMP_MAX = 0.2; // amplitud máxima del sonido
+let AMP_MIN = 0.001; // umbral mínimo de sonido que supera al ruido de fondo
+let AMP_MAX = 0.008; // amplitud máxima del sonido
 
 let AMORTIGUACION = 0.9; // factor de amortiguación de la señal
 
@@ -46,25 +46,6 @@ function setup() {
     let x = centerX + cos(angle) * radius;
     let y = centerY + sin(angle) * radius;
     caminantes.push(new Caminante(x, y));
-
-    //----MICROFONO-----
-    mic = new p5.AudioIn(); // objeto que se comunica con la enrada de micrófono
-    mic.start(); // se inicia el flujo de audio
-    mic.start(startPitch);
-    //----GESTOR----
-    gestorAmp = new GestorSenial(AMP_MIN, AMP_MAX); // inicilizo en goestor con los umbrales mínimo y máximo de la señal
-
-    gestorAmp.f = AMORTIGUACION;
-
-    audioContext = getAudioContext(); // inicia el motor de audio
-
-    //------MOTOR DE AUDIO-----
-    userStartAudio(); // esto lo utilizo porque en algunos navigadores se cuelga el audio. Esto hace un reset del motor de audio (audio context)
-
-    gestorAmp = new GestorSenial(AMP_MIN, AMP_MAX);
-    gestorPitch = new GestorSenial(FREC_MIN, FREC_MAX);
-
-    antesHabiaSonido = false;
   }
 
   numero = random(2, 5);
@@ -72,6 +53,26 @@ function setup() {
 
   // Inicializar puntos de control
   initializeControlPoints();
+
+  //----MICROFONO-----
+  mic = new p5.AudioIn(); // objeto que se comunica con la entrada de micrófono
+  mic.start(); // se inicia el flujo de audio
+
+  //----GESTOR-----
+  gestorAmp = new GestorSenial(AMP_MIN, AMP_MAX); // inicializo el gestor con los umbrales mínimo y máximo de la señal
+  gestorAmp.f = AMORTIGUACION;
+
+  audioContext = getAudioContext(); // inicia el motor de audio
+
+  //------MOTOR DE AUDIO-----
+  userStartAudio(); // esto lo utilizo porque en algunos navegadores se cuelga el audio. Esto hace un reset del motor de audio (audio context)
+
+  gestorPitch = new GestorSenial(FREC_MIN, FREC_MAX);
+
+  antesHabiaSonido = false;
+
+  // Iniciar la detección de pitch
+  startPitch();
 }
 
 function draw() {
@@ -80,7 +81,7 @@ function draw() {
   amp = gestorAmp.filtrada;
 
   haySonido = amp > AMP_MIN;
-  let vol = mic.getLevel(); // cargo en vol la amplitud del micrófono (señal cruda);
+  let vol = mic.getLevel(); // cargo en vol la amplitud del micrófono (señal cruda)
   gestorAmp.actualizar(vol);
 
   background(textura_papel);
@@ -158,9 +159,7 @@ function modelLoaded() {
 function getPitch() {
   pitch.getPitch(function (err, frequency) {
     if (frequency) {
-      //console.log(frequency);
       gestorPitch.actualizar(frequency);
-      //console.log(frequency);
     }
     getPitch();
   });
@@ -183,16 +182,3 @@ function printData() {
 
   gestorAmp.dibujar(100, 500);
 }
-//function mouseClicked() {
-//  ImagenActual++;
-//
-//  if (ImagenActual >= figuras.length) {
-//    ImagenActual = 0;
-//  }
-//
-//  if (sound.isPlaying()) {
-//    sound.stop();
-//  } else {
-//    sound.play();
-//  }
-//}
