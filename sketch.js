@@ -3,7 +3,10 @@ let controlPoints = [];
 let r;
 let numero;
 let caminantes = []; // Única declaración de caminantes
+
 let trazos = [];
+let maxTrazos = 15;
+let pg;
 
 let IMPRIMIR = false;
 
@@ -37,6 +40,8 @@ function preload() {
 
 function setup() {
   createCanvas(594, 869);
+
+  pg = createGraphics(width, height);
 
   let numCaminantes = 3;
   let radius = 150;
@@ -85,16 +90,17 @@ function draw() {
 
   background(textura_papel);
 
-  for (let i = 0; i < trazos.length; i++) {
-    let x = random(width * 0.1, width * 0.9); // Posición aleatoria en el eje X dentro del 10% y 90% del ancho
-    let y = random(height * 0.1, height * 0.9); // Posición aleatoria en el eje Y dentro del 10% y 90% de la altura
-
-    image(trazos[i], x, y);
+  for (let i = 0; i < maxTrazos; i++) {
+    let x = random(width * 0.1, width * 0.9);
+    let y = random(height * 0.1, height * 0.9);
+    let index = floor(random(trazos.length));
+    pg.image(trazos[index], x, y);
   }
+
+  image(pg, 0, 0);
 
   push();
   strokeWeight(16);
-  stroke(129, 166, 202);
 
   strokeJoin(ROUND);
   strokeCap(ROUND);
@@ -103,6 +109,11 @@ function draw() {
   for (let i = 0; i < caminantes.length; i++) {
     let c1 = caminantes[i];
     let c2 = caminantes[(i + 1) % caminantes.length];
+    push();
+    strokeWeight(20);
+    stroke(200, 200, 0);
+    drawBezierCurve(c1, c2, i);
+    pop();
     drawBezierCurve(c1, c2, i);
   }
 
