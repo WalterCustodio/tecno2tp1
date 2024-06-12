@@ -4,7 +4,7 @@ let r;
 let numero;
 let caminantes = []; // Única declaración de caminantes
 
-let IMPRIMIR = false;
+let IMPRIMIR = true;
 
 let mic;
 let amp;
@@ -16,25 +16,18 @@ let antesHabiaSonido; // memoria del estado anterior del sonido
 
 //----CONFIGURACION-----
 let AMP_MIN = 0.001; // umbral mínimo de sonido que supera al ruido de fondo
-let AMP_MAX = 0.09; // amplitud máxima del sonido
+let AMP_MAX = 0.015; // amplitud máxima del sonido
 
-let AMORTIGUACION = 0.9; // factor de amortiguación de la señal
+let AMORTIGUACION = 0.6; // factor de amortiguación de la señal
 
-let FREC_MIN = 600;
+let FREC_MIN = 200;
 let FREC_MAX = 400;
-let classifier;
 
 let gestorAmp;
 let gestorPitch;
 
-let soundModel = 'https://teachablemachine.withgoogle.com/models/QHySO83yA/';
-const model_url =  "https://teachablemachine.withgoogle.com/models/QHySO83yA/";
-  
 function preload() {
-  
   textura_papel = loadImage("imagenes/textura_fondo.png");
-  //  sound = loadSound("sonidos/mi_sonido.mp3"); // Asegúrate de que el archivo de sonido esté en la carpeta correcta
-  classifier = ml5.soundClassifier(soundModel + 'model.json');
 }
 
 function setup() {
@@ -74,9 +67,6 @@ function setup() {
   gestorPitch = new GestorSenial(FREC_MIN, FREC_MAX);
 
   antesHabiaSonido = false;
-
-  // Iniciar la detección de pitch
-  startPitch();
 }
 
 function draw() {
@@ -91,12 +81,10 @@ function draw() {
   background(textura_papel);
 
   push();
-  strokeWeight(20);
-  stroke(0);
+  strokeWeight(16);
+  stroke(129, 166, 202);
   strokeJoin(ROUND);
   strokeCap(ROUND);
-
-  
 
   // Dibujar curvas bezier entre los caminantes
   for (let i = 0; i < caminantes.length; i++) {
@@ -152,23 +140,6 @@ function drawBezierCurve(c1, c2, index) {
   noFill();
   bezier(c1.x, c1.y, cp.x1, cp.y1, cp.x2, cp.y2, c2.x, c2.y);
   pop();
-}
-
-function startPitch() {
-  pitch = ml5.pitchDetection(model_url, audioContext, mic.stream, modelLoaded);
-}
-
-function modelLoaded() {
-  getPitch();
-}
-
-function getPitch() {
-  pitch.getPitch(function (err, frequency) {
-    if (frequency) {
-      gestorPitch.actualizar(frequency);
-    }
-    getPitch();
-  });
 }
 
 function printData() {
