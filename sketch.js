@@ -3,8 +3,9 @@ let controlPoints = [];
 let r;
 let numero;
 let caminantes = []; // Única declaración de caminantes
+let trazos = [];
 
-let IMPRIMIR = true;
+let IMPRIMIR = false;
 
 let mic;
 let amp;
@@ -17,8 +18,7 @@ let antesHabiaSonido; // memoria del estado anterior del sonido
 //----CONFIGURACION-----
 let AMP_MIN = 0.001; // umbral mínimo de sonido que supera al ruido de fondo
 let AMP_MAX = 0.015; // amplitud máxima del sonido
-
-let AMORTIGUACION = 0.6; // factor de amortiguación de la señal
+let AMORTIGUACION = 0.9; // factor de amortiguación de la señal
 
 let FREC_MIN = 200;
 let FREC_MAX = 400;
@@ -28,6 +28,11 @@ let gestorPitch;
 
 function preload() {
   textura_papel = loadImage("imagenes/textura_fondo.png");
+  for (let i = 0; i < 53; i++) {
+    // Asegurarse de ajustar la ruta según la estructura de tu proyecto
+    let imagenPath = "imagenes/layer " + nf(i, 2) + ".png"; // nf(i, 2) asegura que el número sea formateado con dos dígitos (por ejemplo, layer00.png, layer01.png, etc.)
+    trazos.push(loadImage(imagenPath));
+  }
 }
 
 function setup() {
@@ -80,9 +85,17 @@ function draw() {
 
   background(textura_papel);
 
+  for (let i = 0; i < trazos.length; i++) {
+    let x = random(width * 0.1, width * 0.9); // Posición aleatoria en el eje X dentro del 10% y 90% del ancho
+    let y = random(height * 0.1, height * 0.9); // Posición aleatoria en el eje Y dentro del 10% y 90% de la altura
+
+    image(trazos[i], x, y);
+  }
+
   push();
   strokeWeight(16);
   stroke(129, 166, 202);
+
   strokeJoin(ROUND);
   strokeCap(ROUND);
 
