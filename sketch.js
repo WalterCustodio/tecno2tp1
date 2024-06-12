@@ -16,21 +16,25 @@ let antesHabiaSonido; // memoria del estado anterior del sonido
 
 //----CONFIGURACION-----
 let AMP_MIN = 0.001; // umbral mínimo de sonido que supera al ruido de fondo
-let AMP_MAX = 0.008; // amplitud máxima del sonido
+let AMP_MAX = 0.09; // amplitud máxima del sonido
 
 let AMORTIGUACION = 0.9; // factor de amortiguación de la señal
 
-let FREC_MIN = 200;
+let FREC_MIN = 600;
 let FREC_MAX = 400;
+let classifier;
 
 let gestorAmp;
 let gestorPitch;
 
-const model_url = "https://teachablemachine.withgoogle.com/models/afb0-_yXm/";
-
+let soundModel = 'https://teachablemachine.withgoogle.com/models/QHySO83yA/';
+const model_url =  "https://teachablemachine.withgoogle.com/models/QHySO83yA/";
+  
 function preload() {
+  
   textura_papel = loadImage("imagenes/textura_fondo.png");
   //  sound = loadSound("sonidos/mi_sonido.mp3"); // Asegúrate de que el archivo de sonido esté en la carpeta correcta
+  classifier = ml5.soundClassifier(soundModel + 'model.json');
 }
 
 function setup() {
@@ -87,10 +91,12 @@ function draw() {
   background(textura_papel);
 
   push();
-  strokeWeight(16);
-  stroke(129, 166, 202);
+  strokeWeight(20);
+  stroke(0);
   strokeJoin(ROUND);
   strokeCap(ROUND);
+
+  
 
   // Dibujar curvas bezier entre los caminantes
   for (let i = 0; i < caminantes.length; i++) {
