@@ -8,7 +8,7 @@ class Caminante {
   }
 
   dibujar() {
-    ellipse(this.x, this.y, 50, 50);
+   ellipse(this.x, this.y, 50, 50);
   }
 
   mover(caminantes) {
@@ -40,6 +40,10 @@ class Caminante {
 
           this.x = lerp(this.x, targetX, 0.05);
           this.y = lerp(this.y, targetY, 0.05);
+
+          this.x = constrain(this.x, 0 + 120, width - 120);
+          this.y = constrain(this.y, 0 + 150, height - 150);
+
         }
       }
     }
