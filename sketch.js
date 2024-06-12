@@ -90,11 +90,10 @@ function draw() {
 
   background(textura_papel);
 
-  for (let i = 0; i < maxTrazos; i++) {
-    let x = random(width * 0.1, width * 0.9);
-    let y = random(height * 0.1, height * 0.9);
-    let index = floor(random(trazos.length));
-    pg.image(trazos[index], x, y);
+  if (amp > 0.5) {
+    dibujarTrazos(pg);
+    // Después de redibujar los trazos, puedes cambiar el estado de deberiaRedibujarTrazos a false
+    deberiaRedibujarTrazos = false;
   }
 
   image(pg, 0, 0);
@@ -182,4 +181,15 @@ function printData() {
   pop();
 
   gestorAmp.dibujar(100, 500);
+}
+
+function dibujarTrazos(pg) {
+  pg.clear(); // Limpiar el PGraphics antes de dibujar nuevos trazos
+
+  for (let i = 0; i < maxTrazos; i++) {
+    let x = random(width * 0.1, width * 0.9);
+    let y = random(height * 0.1, height * 0.9);
+    let index = floor(random(trazos.length));
+    pg.image(trazos[index], x, y);
+  }
 }
