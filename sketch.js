@@ -36,7 +36,7 @@ function preload() {
   textura_papel = loadImage("imagenes/textura_fondo.png");
   for (let i = 0; i < 53; i++) {
     // Asegurarse de ajustar la ruta según la estructura de tu proyecto
-    let imagenPath = "imagenes/manchas/layer " + nf(i, 2) + ".png"; // nf(i, 2) asegura que el número sea formateado con dos dígitos (por ejemplo, layer00.png, layer01.png, etc.)
+    let imagenPath = "imagenes/layer " + nf(i, 2) + ".png"; // nf(i, 2) asegura que el número sea formateado con dos dígitos (por ejemplo, layer00.png, layer01.png, etc.)
     trazos.push(loadImage(imagenPath));
   }
 }

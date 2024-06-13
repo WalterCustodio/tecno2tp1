@@ -21,8 +21,8 @@ class Caminante {
     this.x += dx;
     this.y += dy;
 
-    this.x = constrain(this.x, 0, width - 50);
-    this.y = constrain(this.y, 0, height - 50);
+    this.x = constrain(this.x, 0, width - 25);
+    this.y = constrain(this.y, 0, height - 25);
 
     this.repulsion(caminantes);
   }
