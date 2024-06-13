@@ -29,11 +29,13 @@ let FREC_MAX = 400;
 let gestorAmp;
 let gestorPitch;
 
+let margen = 50; 
+
 function preload() {
   textura_papel = loadImage("imagenes/textura_fondo.png");
   for (let i = 0; i < 53; i++) {
     // Asegurarse de ajustar la ruta según la estructura de tu proyecto
-    let imagenPath = "imagenes/layer " + nf(i, 2) + ".png"; // nf(i, 2) asegura que el número sea formateado con dos dígitos (por ejemplo, layer00.png, layer01.png, etc.)
+    let imagenPath = "imagenes/manchas/layer " + nf(i, 2) + ".png"; // nf(i, 2) asegura que el número sea formateado con dos dígitos (por ejemplo, layer00.png, layer01.png, etc.)
     trazos.push(loadImage(imagenPath));
   }
 }
@@ -95,11 +97,11 @@ function draw() {
     // Después de redibujar los trazos, puedes cambiar el estado de deberiaRedibujarTrazos a false
     deberiaRedibujarTrazos = false;
   }
-
-  image(pg, 0, 0);
+  
+  image(pg, 0,0);
 
   push();
-  strokeWeight(16);
+  strokeWeight(25);
 
   strokeJoin(ROUND);
   strokeCap(ROUND);
@@ -109,8 +111,8 @@ function draw() {
     let c1 = caminantes[i];
     let c2 = caminantes[(i + 1) % caminantes.length];
     push();
-    strokeWeight(20);
-    stroke(200, 200, 0);
+    strokeWeight(30);
+    stroke(129, 166, 202);
     drawBezierCurve(c1, c2, i);
     pop();
     drawBezierCurve(c1, c2, i);
@@ -186,10 +188,23 @@ function printData() {
 function dibujarTrazos(pg) {
   pg.clear(); // Limpiar el PGraphics antes de dibujar nuevos trazos
 
+  let escala = 0.8;
+
   for (let i = 0; i < maxTrazos; i++) {
-    let x = random(width * 0.1, width * 0.9);
-    let y = random(height * 0.1, height * 0.9);
     let index = floor(random(trazos.length));
-    pg.image(trazos[index], x, y);
+    let imgOriginal = trazos[index];
+
+    let nuevaAnchura = imgOriginal.width * escala;
+    let nuevaAltura = imgOriginal.height * escala;
+
+    let maxX = width - nuevaAnchura - margen;
+    let maxY = height - nuevaAltura - margen;
+    let x = random(margen, maxX);
+    let y = random(margen, maxY);
+
+    let imgEscalada = createImage(nuevaAnchura, nuevaAltura);
+    imgEscalada.copy(imgOriginal, 0, 0, imgOriginal.width, imgOriginal.height, 0, 0, nuevaAnchura, nuevaAltura);
+
+    pg.image(imgEscalada, x, y);
   }
 }
