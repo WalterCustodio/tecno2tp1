@@ -8,13 +8,19 @@ class Caminante {
   }
 
   dibujar() {
-  // ellipse(this.x, this.y, 50, 50);
+    // ellipse(this.x, this.y, 50, 50);
   }
 
-  mover(caminantes) {
-    let anguloMouse = atan2(mouseY - this.y, mouseX - this.x);
+  mover(caminantes, fft) {
+    let spectrum = fft.analyze();
+    let lowFreq = fft.getEnergy("bass");
+    let highFreq = fft.getEnergy("treble");
 
-    this.dir = anguloMouse;
+    if (lowFreq > highFreq) {
+      this.dir = PI / 2; // Mover hacia arriba
+    } else {
+      this.dir = (3 * PI) / 2; // Mover hacia abajo
+    }
 
     let dx = this.vel * cos(this.dir);
     let dy = this.vel * sin(this.dir);
@@ -43,7 +49,6 @@ class Caminante {
 
           this.x = constrain(this.x, 0 + 120, width - 120);
           this.y = constrain(this.y, 0 + 150, height - 150);
-
         }
       }
     }

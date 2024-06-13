@@ -5,8 +5,9 @@ let numero;
 let caminantes = []; // Única declaración de caminantes
 
 let trazos = [];
-let maxTrazos = 15;
+let maxTrazos;
 let pg;
+let nuevo = true;
 
 let IMPRIMIR = false;
 
@@ -30,7 +31,11 @@ let FREC_MAX = 400;
 let gestorAmp;
 let gestorPitch;
 
-let margen = 50; 
+let margen = 50;
+
+let ahora;
+let marca;
+let limiteTiempo = 4000;
 
 function preload() {
   textura_papel = loadImage("imagenes/textura_fondo.png");
@@ -46,10 +51,12 @@ function setup() {
 
   pg = createGraphics(width, height);
 
-  let numCaminantes = 3;
+  let numCaminantes = 4;
   let radius = 150;
   let centerX = width / 2;
   let centerY = height / 2;
+
+  maxTrazos = random(15, 20);
 
   for (let i = 0; i < numCaminantes; i++) {
     let angle = (TWO_PI / numCaminantes) * i;
@@ -87,19 +94,28 @@ function draw() {
 
   amp = gestorAmp.filtrada;
 
-  haySonido = amp > AMP_MIN;
+  haySonido = gestorAmp.filtrada > 0.1;
+
+  let inicioElSonido = haySonido && !antesHabiaSonido; // evendo de INICIO de un sonido
+  let finDelSonido = !haySonido && antesHabiaSonido; // evento de fIN de un sonido
+
   let vol = mic.getLevel(); // cargo en vol la amplitud del micrófono (señal cruda)
   gestorAmp.actualizar(vol);
 
+  ahora = millis();
+
   background(textura_papel);
 
-  if (amp > 0.5) {
+  if (amp > 0.5 && nuevo) {
+    marca = millis();
     dibujarTrazos(pg);
-    // Después de redibujar los trazos, puedes cambiar el estado de deberia Redibujar Trazos a false
-    deberiaRedibujarTrazos = false;
   }
-  
-  image(pg, 0,0);
+
+  if (ahora > marca + limiteTiempo) {
+    nuevo = true;
+  }
+
+  image(pg, 0, 0);
 
   push();
   strokeWeight(25);
@@ -187,8 +203,11 @@ function printData() {
 }
 
 function dibujarTrazos(pg) {
-  pg.clear(); // Limpiar el PGraphics antes de dibujar nuevos trazos
+  nuevoFondo(pg);
+}
 
+function nuevoFondo(pg) {
+  pg.clear();
   let escala = 0.8;
 
   for (let i = 0; i < maxTrazos; i++) {
@@ -204,8 +223,19 @@ function dibujarTrazos(pg) {
     let y = random(margen, maxY);
 
     let imgEscalada = createImage(nuevaAnchura, nuevaAltura);
-    imgEscalada.copy(imgOriginal, 0, 0, imgOriginal.width, imgOriginal.height, 0, 0, nuevaAnchura, nuevaAltura);
+    imgEscalada.copy(
+      imgOriginal,
+      0,
+      0,
+      imgOriginal.width,
+      imgOriginal.height,
+      0,
+      0,
+      nuevaAnchura,
+      nuevaAltura
+    );
 
     pg.image(imgEscalada, x, y);
+    nuevo = false;
   }
 }
