@@ -11,16 +11,10 @@ class Caminante {
     // ellipse(this.x, this.y, 50, 50);
   }
 
-  mover(caminantes, fft) {
-    let spectrum = fft.analyze();
-    let lowFreq = fft.getEnergy("bass");
-    let highFreq = fft.getEnergy("treble");
+  mover(caminantes) {
+    let anguloMouse = atan2(mouseY - this.y, mouseX - this.x);
 
-    if (lowFreq > highFreq) {
-      this.dir = PI / 2; // Mover hacia arriba
-    } else {
-      this.dir = (3 * PI) / 2; // Mover hacia abajo
-    }
+    this.dir = anguloMouse;
 
     let dx = this.vel * cos(this.dir);
     let dy = this.vel * sin(this.dir);
