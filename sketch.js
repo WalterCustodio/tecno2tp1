@@ -19,6 +19,7 @@ let haySonido = false;
 let antesHabiaSonido; // memoria del estado anterior del sonido
 
 //----CONFIGURACION-----
+
 let AMP_MIN = 0.001; // umbral mínimo de sonido que supera al ruido de fondo
 let AMP_MAX = 0.015; // amplitud máxima del sonido
 let AMORTIGUACION = 0.9; // factor de amortiguación de la señal
@@ -94,7 +95,7 @@ function draw() {
 
   if (amp > 0.5) {
     dibujarTrazos(pg);
-    // Después de redibujar los trazos, puedes cambiar el estado de deberiaRedibujarTrazos a false
+    // Después de redibujar los trazos, puedes cambiar el estado de deberia Redibujar Trazos a false
     deberiaRedibujarTrazos = false;
   }
   

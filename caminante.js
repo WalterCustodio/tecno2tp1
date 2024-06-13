@@ -8,7 +8,7 @@ class Caminante {
   }
 
   dibujar() {
-   ellipse(this.x, this.y, 50, 50);
+  // ellipse(this.x, this.y, 50, 50);
   }
 
   mover(caminantes) {
@@ -31,7 +31,7 @@ class Caminante {
     for (let other of caminantes) {
       if (other !== this) {
         let distancia = dist(this.x, this.y, other.x, other.y);
-        let minDistancia = this.t * 15;
+        let minDistancia = this.t * 20;
 
         if (distancia < minDistancia) {
           let angle = atan2(this.y - other.y, this.x - other.x);
