@@ -21,8 +21,8 @@ let antesHabiaSonido; // memoria del estado anterior del sonido
 
 //----CONFIGURACION-----
 
-let AMP_MIN = 0.001; // umbral mínimo de sonido que supera al ruido de fondo
-let AMP_MAX = 0.015; // amplitud máxima del sonido
+let AMP_MIN = 0.009; // umbral mínimo de sonido que supera al ruido de fondo
+let AMP_MAX = 0.055; // amplitud máxima del sonido
 let AMORTIGUACION = 0.9; // factor de amortiguación de la señal
 
 let FREC_MIN = 200;
@@ -35,7 +35,7 @@ let margen = 50;
 
 let ahora;
 let marca;
-let limiteTiempo = 4000;
+let limiteTiempo = 2000;
 
 function preload() {
   textura_papel = loadImage("imagenes/textura_fondo.png");
@@ -57,6 +57,8 @@ function setup() {
   let centerY = height / 2;
 
   maxTrazos = random(15, 20);
+
+  
 
   for (let i = 0; i < numCaminantes; i++) {
     let angle = (TWO_PI / numCaminantes) * i;
@@ -118,22 +120,37 @@ function draw() {
   image(pg, 0, 0);
 
   push();
-  strokeWeight(25);
+  strokeWeight(45);
 
   strokeJoin(ROUND);
   strokeCap(ROUND);
 
   // Dibujar curvas bezier entre los caminantes
+  // for (let i = 0; i < caminantes.length; i++) {
+  //   let c1 = caminantes[i];
+  //   let c2 = caminantes[(i + 1) % caminantes.length];
+  //   push();
+  //   strokeWeight(48);
+  //   stroke(129, 166, 202);
+  //   drawBezierCurve(c1, c2, i);
+  //   pop();
+  //   drawBezierCurve(c1, c2, i);
+  // }
+
+  
+  beginShape();
+  let c1ini = caminantes[0];
+  let c2ini = caminantes[(0 + 1) % caminantes.length];
+  
+  vertex(c1ini.x,c1ini.y );
   for (let i = 0; i < caminantes.length; i++) {
     let c1 = caminantes[i];
     let c2 = caminantes[(i + 1) % caminantes.length];
-    push();
-    strokeWeight(30);
-    stroke(129, 166, 202);
-    drawBezierCurve(c1, c2, i);
-    pop();
-    drawBezierCurve(c1, c2, i);
+    let cp = controlPoints[i];
+    bezierVertex(c1.x, c1.y, cp.x1, cp.y1, cp.x2, cp.y2, c2.x, c2.y);
   }
+  vertex(c1ini.x,c1ini.y);
+  endShape();
 
   pop();
 

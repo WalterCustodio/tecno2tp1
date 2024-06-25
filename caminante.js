@@ -8,7 +8,7 @@ class Caminante {
   }
 
   dibujar() {
-    // ellipse(this.x, this.y, 50, 50);
+     ellipse(this.x, this.y, 50, 50);
   }
 
   mover(caminantes) {
