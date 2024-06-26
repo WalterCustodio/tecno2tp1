@@ -2,12 +2,12 @@ let textura_papel;
 let controlPoints = [];
 let r;
 let numero;
-let caminantes = []; // Única declaración de caminantes
+let caminantes = [];
 
 let trazos = [];
 let maxTrazos;
-let pg;
-let nuevo = true;
+let trazoManager;
+let bgCumplioElTiempo = true;
 
 let IMPRIMIR = false;
 
@@ -17,13 +17,11 @@ let pitch;
 let audioContext;
 
 let haySonido = false;
-let antesHabiaSonido; // memoria del estado anterior del sonido
+let antesHabiaSonido;
 
-//----CONFIGURACION-----
-
-let AMP_MIN = 0.009; // umbral mínimo de sonido que supera al ruido de fondo
-let AMP_MAX = 0.055; // amplitud máxima del sonido
-let AMORTIGUACION = 0.9; // factor de amortiguación de la señal
+let AMP_MIN = 0.009;
+let AMP_MAX = 0.055;
+let AMORTIGUACION = 0.9;
 
 let FREC_MIN = 200;
 let FREC_MAX = 400;
@@ -41,7 +39,7 @@ function preload() {
   textura_papel = loadImage("imagenes/textura_fondo.png");
   for (let i = 0; i < 53; i++) {
     let imagenPath = "imagenes/layer" + nf(i, 2) + ".png";
-    console.log("Cargando imagen: " + imagenPath); // Log de depuración
+    console.log("Cargando imagen: " + imagenPath);
     trazos.push(loadImage(imagenPath));
   }
 }
@@ -49,16 +47,12 @@ function preload() {
 function setup() {
   createCanvas(594, 869);
 
-  pg = createGraphics(width, height);
-
   let numCaminantes = 4;
   let radius = 150;
   let centerX = width / 2;
   let centerY = height / 2;
 
   maxTrazos = random(15, 20);
-
-  
 
   for (let i = 0; i < numCaminantes; i++) {
     let angle = (TWO_PI / numCaminantes) * i;
@@ -68,27 +62,23 @@ function setup() {
   }
 
   numero = random(2, 5);
-  //r = 25;
 
-  // Inicializar puntos de control
   initializeControlPoints();
 
-  //----MICROFONO-----
-  mic = new p5.AudioIn(); // objeto que se comunica con la entrada de micrófono
-  mic.start(); // se inicia el flujo de audio
+  mic = new p5.AudioIn();
+  mic.start();
 
-  //----GESTOR-----
-  gestorAmp = new GestorSenial(AMP_MIN, AMP_MAX); // inicializo el gestor con los umbrales mínimo y máximo de la señal
+  gestorAmp = new GestorSenial(AMP_MIN, AMP_MAX);
   gestorAmp.f = AMORTIGUACION;
 
-  audioContext = getAudioContext(); // inicia el motor de audio
-
-  //------MOTOR DE AUDIO-----
-  userStartAudio(); // esto lo utilizo porque en algunos navegadores se cuelga el audio. Esto hace un reset del motor de audio (audio context)
+  audioContext = getAudioContext();
+  userStartAudio();
 
   gestorPitch = new GestorSenial(FREC_MIN, FREC_MAX);
 
   antesHabiaSonido = false;
+
+  trazoManager = new TrazoManager(maxTrazos, trazos, width, height, margen);
 }
 
 function draw() {
@@ -98,58 +88,52 @@ function draw() {
 
   haySonido = gestorAmp.filtrada > 0.1;
 
-  let inicioElSonido = haySonido && !antesHabiaSonido; // evendo de INICIO de un sonido
-  let finDelSonido = !haySonido && antesHabiaSonido; // evento de fIN de un sonido
+  let inicioElSonido = haySonido && !antesHabiaSonido;
+  let finDelSonido = !haySonido && antesHabiaSonido;
 
-  let vol = mic.getLevel(); // cargo en vol la amplitud del micrófono (señal cruda)
+  let vol = mic.getLevel();
   gestorAmp.actualizar(vol);
 
   ahora = millis();
 
   background(textura_papel);
 
-  if (amp > 0.5 && nuevo) {
+  if (amp > 0.4 && bgCumplioElTiempo) {
     marca = millis();
-    dibujarTrazos(pg);
+    trazoManager.generarNuevaConfiguracion();
+    bgCumplioElTiempo = false;
   }
 
   if (ahora > marca + limiteTiempo) {
-    nuevo = true;
+    bgCumplioElTiempo = true;
   }
 
-  image(pg, 0, 0);
+  trazoManager.mover();
+  trazoManager.dibujar();
+  image(trazoManager.getGraphics(), 0, 0);
 
   push();
+  noFill();
   strokeWeight(45);
 
   strokeJoin(ROUND);
   strokeCap(ROUND);
 
-  // Dibujar curvas bezier entre los caminantes
-  // for (let i = 0; i < caminantes.length; i++) {
-  //   let c1 = caminantes[i];
-  //   let c2 = caminantes[(i + 1) % caminantes.length];
-  //   push();
-  //   strokeWeight(48);
-  //   stroke(129, 166, 202);
-  //   drawBezierCurve(c1, c2, i);
-  //   pop();
-  //   drawBezierCurve(c1, c2, i);
-  // }
-
-  
   beginShape();
+  push();
+  noFill();
   let c1ini = caminantes[0];
   let c2ini = caminantes[(0 + 1) % caminantes.length];
-  
-  vertex(c1ini.x,c1ini.y );
+
+  vertex(c1ini.x, c1ini.y);
   for (let i = 0; i < caminantes.length; i++) {
     let c1 = caminantes[i];
     let c2 = caminantes[(i + 1) % caminantes.length];
     let cp = controlPoints[i];
     bezierVertex(c1.x, c1.y, cp.x1, cp.y1, cp.x2, cp.y2, c2.x, c2.y);
   }
-  vertex(c1ini.x,c1ini.y);
+  vertex(c1ini.x, c1ini.y);
+
   endShape();
 
   pop();
@@ -159,12 +143,13 @@ function draw() {
     caminante.mover(caminantes);
   }
 
-  // Actualizar puntos de control lentamente
   updateControlPoints();
 
   if (IMPRIMIR) {
     printData();
   }
+
+  antesHabiaSonido = haySonido;
 }
 
 function initializeControlPoints() {
@@ -217,42 +202,4 @@ function printData() {
   pop();
 
   gestorAmp.dibujar(100, 500);
-}
-
-function dibujarTrazos(pg) {
-  nuevoFondo(pg);
-}
-
-function nuevoFondo(pg) {
-  pg.clear();
-  let escala = 0.8;
-
-  for (let i = 0; i < maxTrazos; i++) {
-    let index = floor(random(trazos.length));
-    let imgOriginal = trazos[index];
-
-    let nuevaAnchura = imgOriginal.width * escala;
-    let nuevaAltura = imgOriginal.height * escala;
-
-    let maxX = width - nuevaAnchura - margen;
-    let maxY = height - nuevaAltura - margen;
-    let x = random(margen, maxX);
-    let y = random(margen, maxY);
-
-    let imgEscalada = createImage(nuevaAnchura, nuevaAltura);
-    imgEscalada.copy(
-      imgOriginal,
-      0,
-      0,
-      imgOriginal.width,
-      imgOriginal.height,
-      0,
-      0,
-      nuevaAnchura,
-      nuevaAltura
-    );
-
-    pg.image(imgEscalada, x, y);
-    nuevo = false;
-  }
 }
