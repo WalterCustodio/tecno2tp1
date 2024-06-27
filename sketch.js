@@ -41,9 +41,9 @@ const model_url =
   "https://cdn.jsdelivr.net/gh/ml5js/ml5-data-and-models/models/pitch-detection/crepe/";
 
 function preload() {
-  textura_papel = loadImage("imagenes/textura_fondo.png");
+  textura_papel = loadImage("image/textura_fondo.png");
   for (let i = 0; i < 51; i++) {
-    let imagenPath = "imagenes/layer" + nf(i, 2) + ".png";
+    let imagenPath = "image/layer" + nf(i, 2) + ".png";
     trazos.push(loadImage(imagenPath));
   }
 }
