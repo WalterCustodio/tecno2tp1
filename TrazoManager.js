@@ -13,7 +13,7 @@ class TrazoManager {
 
   generarNuevaConfiguracion() {
     console.log("Generando nueva configuración de trazos");
-    this.trazosData = []; // Limpiar datos anteriores
+    this.trazosData = [];
     for (let i = 0; i < this.maxTrazos; i++) {
       let trazo = {
         imgIndex: floor(random(this.trazos.length)),
@@ -22,8 +22,8 @@ class TrazoManager {
         angle: random(TWO_PI),
         radius: random(5, 20),
         speed: random(0.001, 0.01),
-        rotationSpeed: random(-0.05, 0.05), // Velocidad de rotación
-        rotationAngle: random(TWO_PI), // Ángulo inicial de rotación
+        rotationSpeed: random(-0.005, 0.005),
+        rotationAngle: random(TWO_PI),
       };
       this.trazosData.push(trazo);
     }
@@ -31,15 +31,14 @@ class TrazoManager {
 
   mover() {
     for (let trazo of this.trazosData) {
-      trazo.rotationAngle += trazo.rotationSpeed; // Actualizar el ángulo de rotación
+      trazo.rotationAngle += trazo.rotationSpeed;
 
       // Movimiento en el plano xy
-      let offsetX = cos(trazo.angle) * 2; // Movimiento mínimo
-      let offsetY = sin(trazo.angle) * 2; // Movimiento mínimo
+      let offsetX = cos(trazo.angle) / 10;
+      let offsetY = sin(trazo.angle) / 10;
       trazo.x += offsetX;
       trazo.y += offsetY;
 
-      // Limitar dentro de los límites del canvas
       trazo.x = constrain(trazo.x, this.margen, this.width - this.margen);
       trazo.y = constrain(trazo.y, this.margen, this.height - this.margen);
     }
@@ -57,7 +56,7 @@ class TrazoManager {
 
       this.pg.push();
       this.pg.translate(trazo.x, trazo.y);
-      this.pg.rotate(trazo.rotationAngle); // Aplicar rotación
+      this.pg.rotate(trazo.rotationAngle);
       this.pg.imageMode(CENTER);
       this.pg.image(imgOriginal, 0, 0, nuevaAnchura, nuevaAltura);
       this.pg.pop();
