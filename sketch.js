@@ -56,7 +56,7 @@ function setup() {
   let centerX = width / 2;
   let centerY = height / 2;
 
-  maxTrazos = random(10,15);
+  maxTrazos = random(10, 15);
 
   for (let i = 0; i < numCaminantes; i++) {
     let angle = (TWO_PI / numCaminantes) * i;
@@ -92,8 +92,8 @@ function setup() {
   );
 }
 
-function setGrosor (valor){
-  grosor = map(valor, 0, 1, 55, 20);
+function setGrosor(valor) {
+  grosor = map(valor, 0, 1, 45, 30);
 }
 
 function draw() {
@@ -113,7 +113,7 @@ function draw() {
 
   background(textura_papel);
 
-  if (amp > 0.4 && bgCumplioElTiempo) {
+  if (gestorAmp.filtrada > 0.5 && bgCumplioElTiempo) {
     marca = millis();
     trazoManager.generarNuevaConfiguracion();
     bgCumplioElTiempo = false;
@@ -132,19 +132,18 @@ function draw() {
   push();
   noFill();
 
-  if(haySonido){ //Estado
+  if (haySonido) {
+    //Estado
     setGrosor(gestorPitch.filtrada);
   }
-  console.log (grosor);
-  strokeWeight(grosor);
+  push();
+
+  stroke(100, 200, 255);
+  strokeWeight(grosor + 3);
 
   strokeJoin(ROUND);
   strokeCap(ROUND);
-
-
-  
   beginShape();
-  push();
   noFill();
   let c1ini = caminantes[0];
   let c2ini = caminantes[(0 + 1) % caminantes.length];
@@ -162,9 +161,32 @@ function draw() {
 
   pop();
 
+  push();
+
+  strokeWeight(grosor);
+
+  beginShape();
+
+  noFill();
+  c1ini = caminantes[0];
+  c2ini = caminantes[(0 + 1) % caminantes.length];
+
+  vertex(c1ini.x, c1ini.y);
+  for (let i = 0; i < caminantes.length; i++) {
+    let c1 = caminantes[i];
+    let c2 = caminantes[(i + 1) % caminantes.length];
+    let cp = controlPoints[i];
+    bezierVertex(c1.x, c1.y, cp.x1, cp.y1, cp.x2, cp.y2, c2.x, c2.y);
+  }
+  vertex(c1ini.x, c1ini.y);
+
+  endShape();
+
+  pop();
+
   for (let caminante of caminantes) {
     caminante.dibujar();
-    caminante.mover(caminantes);
+    caminante.mover(caminantes, gestorPitch.filtrada, gestorAmp.filtrada);
   }
 
   updateControlPoints();

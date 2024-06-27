@@ -39,11 +39,9 @@ class TrazoManager {
       trazo.x += offsetX;
       trazo.y += offsetY;
 
-      // Calcular radio efectivo basado en el tamaño de la imagen
       let imgOriginal = this.trazos[trazo.imgIndex];
       let radioEfectivo = max(imgOriginal.width, imgOriginal.height) * 0.4; // Ajuste del tamaño de la escala
 
-      // Rebote en los bordes
       if (
         trazo.x - radioEfectivo <= this.margen ||
         trazo.x + radioEfectivo >= this.width - this.margen
@@ -57,7 +55,6 @@ class TrazoManager {
         trazo.angle = TWO_PI - trazo.angle;
       }
 
-      // Limitar dentro de los límites del canvas considerando el radio efectivo
       trazo.x = constrain(
         trazo.x,
         this.margen + radioEfectivo,
