@@ -9,7 +9,7 @@ let maxTrazos;
 let trazoManager;
 let bgCumplioElTiempo = true;
 
-let IMPRIMIR = true;
+let IMPRIMIR = false;
 
 let mic;
 let amp;
@@ -54,7 +54,7 @@ function setup() {
   let centerX = width / 2;
   let centerY = height / 2;
 
-  maxTrazos = random(15, 20);
+  maxTrazos = random(15);
 
   for (let i = 0; i < numCaminantes; i++) {
     let angle = (TWO_PI / numCaminantes) * i;
@@ -81,7 +81,13 @@ function setup() {
 
   antesHabiaSonido = false;
 
-  trazoManager = new TrazoManager(maxTrazos, trazos, width, height, margen);
+  trazoManager = new TrazoManager(
+    maxTrazos,
+    trazos,
+    width * 0.85,
+    height * 0.9,
+    margen
+  );
 }
 
 function draw() {
@@ -113,8 +119,10 @@ function draw() {
 
   trazoManager.mover();
   trazoManager.dibujar();
-  image(trazoManager.getGraphics(), 0, 0);
-
+  push();
+  imageMode(CENTER);
+  image(trazoManager.getGraphics(), width / 2, height / 2);
+  pop();
   push();
   noFill();
   strokeWeight(45);
