@@ -9,7 +9,7 @@ let maxTrazos;
 let trazoManager;
 let bgCumplioElTiempo = true;
 
-let IMPRIMIR = false;
+let IMPRIMIR = true;
 
 let mic;
 let amp;
@@ -35,11 +35,13 @@ let ahora;
 let marca;
 let limiteTiempo = 2000;
 
+const model_url =
+  "https://cdn.jsdelivr.net/gh/ml5js/ml5-data-and-models/models/pitch-detection/crepe/";
+
 function preload() {
   textura_papel = loadImage("imagenes/textura_fondo.png");
   for (let i = 0; i < 53; i++) {
     let imagenPath = "imagenes/layer" + nf(i, 2) + ".png";
-    console.log("Cargando imagen: " + imagenPath);
     trazos.push(loadImage(imagenPath));
   }
 }
@@ -66,7 +68,8 @@ function setup() {
   initializeControlPoints();
 
   mic = new p5.AudioIn();
-  mic.start();
+
+  mic.start(startPitch);
 
   gestorAmp = new GestorSenial(AMP_MIN, AMP_MAX);
   gestorAmp.f = AMORTIGUACION;
@@ -193,7 +196,7 @@ function printData() {
   fill(0);
   let texto;
 
-  texto = "amplitud: " + amp;
+  texto = "pitch: " + amp;
   text(texto, 20, 20);
 
   fill(0);
@@ -202,4 +205,21 @@ function printData() {
   pop();
 
   gestorAmp.dibujar(100, 500);
+  gestorPitch.dibujar(100, 100);
+}
+function startPitch() {
+  pitch = ml5.pitchDetection(model_url, audioContext, mic.stream, modelLoaded);
+}
+
+function modelLoaded() {
+  getPitch();
+}
+
+function getPitch() {
+  pitch.getPitch(function (err, frequency) {
+    if (frequency) {
+      gestorPitch.actualizar(frequency);
+    }
+    getPitch();
+  });
 }
