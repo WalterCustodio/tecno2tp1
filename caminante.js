@@ -6,14 +6,33 @@ class Caminante {
     this.vel = 4;
     this.dir = 0;
     this.maxDist = width / 8;
+    this.minDistancia = 400;
+    this.mausX = 0;
+    this.mausY = 0;
   }
 
   dibujar() {
-    //  ellipse(this.x, this.y, 50, 50);
+    //ellipse(this.x, this.y, 50, 50);
   }
 
-  mover(caminantes) {
-    let anguloMouse = atan2(mouseY - this.y, mouseX - this.x);
+  setMinDist(valor) {
+    this.minDistancia = map(valor, 0, 1, 500, 250);
+  }
+
+  setX(pitch) {
+    this.mausX = map(pitch, 0, 1, 0, width - 50);
+  }
+  setY(vol) {
+    this.mausY = map(vol, 0, 1, height / 2, 0);
+  }
+
+  mover(caminantes, pitch, vol) {
+    this.setY(vol);
+    this.setX(pitch);
+
+    console.log(this.mausX, this.mausY);
+
+    let anguloMouse = atan2(this.mausY - this.y, this.mausX - this.x);
 
     this.dir = anguloMouse;
 
@@ -25,6 +44,8 @@ class Caminante {
     this.x = constrain(this.x, 0, width - 25);
     this.y = constrain(this.y, 0, height - 25);
 
+    this.setMinDist(pitch);
+
     this.repulsion(caminantes);
   }
 
@@ -32,12 +53,11 @@ class Caminante {
     for (let other of caminantes) {
       if (other !== this) {
         let distancia = dist(this.x, this.y, other.x, other.y);
-        let minDistancia = this.t * 20;
 
-        if (distancia < minDistancia) {
+        if (distancia < this.minDistancia) {
           let angle = atan2(this.y - other.y, this.x - other.x);
-          let targetX = this.x + cos(angle) * (minDistancia - distancia);
-          let targetY = this.y + sin(angle) * (minDistancia - distancia);
+          let targetX = this.x + cos(angle) * (this.minDistancia - distancia);
+          let targetY = this.y + sin(angle) * (this.minDistancia - distancia);
 
           this.x = lerp(this.x, targetX, 0.05);
           this.y = lerp(this.y, targetY, 0.05);
