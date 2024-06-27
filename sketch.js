@@ -43,7 +43,7 @@ const model_url =
 function preload() {
   textura_papel = loadImage("image/textura_fondo.png");
   for (let i = 0; i < 51; i++) {
-    let imagenPath = "image/layer" + nf(i, 2) + ".png";
+    let imagenPath = "image/Layer" + nf(i, 2) + ".png";
     trazos.push(loadImage(imagenPath));
   }
 }
