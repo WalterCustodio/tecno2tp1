@@ -4,6 +4,8 @@ let r;
 let numero;
 let caminantes = [];
 
+let grosor = 30;
+
 let trazos = [];
 let maxTrazos;
 let trazoManager;
@@ -40,7 +42,7 @@ const model_url =
 
 function preload() {
   textura_papel = loadImage("imagenes/textura_fondo.png");
-  for (let i = 0; i < 53; i++) {
+  for (let i = 0; i < 51; i++) {
     let imagenPath = "imagenes/layer" + nf(i, 2) + ".png";
     trazos.push(loadImage(imagenPath));
   }
@@ -54,7 +56,7 @@ function setup() {
   let centerX = width / 2;
   let centerY = height / 2;
 
-  maxTrazos = random(15);
+  maxTrazos = random(10,15);
 
   for (let i = 0; i < numCaminantes; i++) {
     let angle = (TWO_PI / numCaminantes) * i;
@@ -88,6 +90,10 @@ function setup() {
     height * 0.9,
     margen
   );
+}
+
+function setGrosor (valor){
+  grosor = map(valor, 0, 1, 55, 20);
 }
 
 function draw() {
@@ -125,11 +131,18 @@ function draw() {
   pop();
   push();
   noFill();
-  strokeWeight(45);
+
+  if(haySonido){ //Estado
+    setGrosor(gestorPitch.filtrada);
+  }
+  console.log (grosor);
+  strokeWeight(grosor);
 
   strokeJoin(ROUND);
   strokeCap(ROUND);
 
+
+  
   beginShape();
   push();
   noFill();
