@@ -21,7 +21,7 @@ class TrazoManager {
         y: random(this.margen, this.height - this.margen),
         angle: random(TWO_PI),
         radius: random(5, 20),
-        speed: random(0.001, 0.01),
+        speed: random(0.5, 2), // Ajustar velocidad de traslación
         rotationSpeed: random(-0.005, 0.005),
         rotationAngle: random(TWO_PI),
       };
@@ -34,13 +34,40 @@ class TrazoManager {
       trazo.rotationAngle += trazo.rotationSpeed;
 
       // Movimiento en el plano xy
-      let offsetX = cos(trazo.angle) / 10;
-      let offsetY = sin(trazo.angle) / 10;
+      let offsetX = (trazo.speed * cos(trazo.angle)) / 10;
+      let offsetY = (trazo.speed * sin(trazo.angle)) / 10;
       trazo.x += offsetX;
       trazo.y += offsetY;
 
-      trazo.x = constrain(trazo.x, this.margen, this.width - this.margen);
-      trazo.y = constrain(trazo.y, this.margen, this.height - this.margen);
+      // Calcular radio efectivo basado en el tamaño de la imagen
+      let imgOriginal = this.trazos[trazo.imgIndex];
+      let radioEfectivo = max(imgOriginal.width, imgOriginal.height) * 0.4; // Ajuste del tamaño de la escala
+
+      // Rebote en los bordes
+      if (
+        trazo.x - radioEfectivo <= this.margen ||
+        trazo.x + radioEfectivo >= this.width - this.margen
+      ) {
+        trazo.angle = PI - trazo.angle;
+      }
+      if (
+        trazo.y - radioEfectivo <= this.margen ||
+        trazo.y + radioEfectivo >= this.height - this.margen
+      ) {
+        trazo.angle = TWO_PI - trazo.angle;
+      }
+
+      // Limitar dentro de los límites del canvas considerando el radio efectivo
+      trazo.x = constrain(
+        trazo.x,
+        this.margen + radioEfectivo,
+        this.width - this.margen - radioEfectivo
+      );
+      trazo.y = constrain(
+        trazo.y,
+        this.margen + radioEfectivo,
+        this.height - this.margen - radioEfectivo
+      );
     }
   }
 
