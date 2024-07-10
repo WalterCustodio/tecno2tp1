@@ -9,10 +9,13 @@ class Caminante {
     this.minDistancia = 400;
     this.mausX = 0;
     this.mausY = 0;
+
+    this.angulo = 0
+    this.radio=3;
   }
 
   dibujar() {
-    //ellipse(this.x, this.y, 50, 50);
+   // ellipse(this.x, this.y, 50, 50);
   }
 
   setMinDist(valor) {
@@ -26,20 +29,71 @@ class Caminante {
     this.mausY = map(vol, 0, 1, height / 2, 0);
   }
 
+  // mover(caminantes, pitch, vol) {
+  //   this.setY(vol);
+  //   this.setX(pitch);
+
+  //    console.log(this.mausX, this.mausY);
+
+  //    let anguloMouse = atan2(this.mausY - this.y, this.mausX - this.x);
+
+  //    this.dir = anguloMouse;
+
+  //    let dx = this.vel * cos(this.dir);
+  //    let dy = this.vel * sin(this.dir);
+  //    this.x += dx;
+  //    this.y += dy;
+
+
+    //------------MOVIMIENTO HACIA ARRIBA-----------------
+    // if (pitch > 0.5) {
+    //   this.y -= this.vel;
+    // } else {
+    //   let anguloMouse = atan2(this.mausY - this.y, this.mausX - this.x);
+    //   this.dir = anguloMouse;
+
+    //   let dx = this.vel * cos(this.dir);
+    //   let dy = this.vel * sin(this.dir);
+    //   this.x += dx;
+    //   this.y += dy;
+    // }
+//------------MOVIMIENTO HACIA ARRIBA-----------------
+
+
+
+
+
+  //   this.x = constrain(this.x, 0, width - 25);
+  //   this.y = constrain(this.y, 0, height - 25);
+
+  //   this.setMinDist(pitch);
+
+  //   this.repulsion(caminantes);
+  // }
+
+
+
   mover(caminantes, pitch, vol) {
     this.setY(vol);
     this.setX(pitch);
 
-    console.log(this.mausX, this.mausY);
+    
+    if (pitch > 0.3 && pitch < 0.7) {
+      //espiral
+      this.angulo += 0.1;
+      let radio= 10;
+      this.x += cos(this.angulo) * this.radio;
+      this.y += sin(this.angulo) * this.radio;
+    } else {
+      
+      let anguloMouse = atan2(this.mausY - this.y, this.mausX - this.x);
+      this.dir = anguloMouse;
 
-    let anguloMouse = atan2(this.mausY - this.y, this.mausX - this.x);
-
-    this.dir = anguloMouse;
-
-    let dx = this.vel * cos(this.dir);
-    let dy = this.vel * sin(this.dir);
-    this.x += dx;
-    this.y += dy;
+      let dx = this.vel * cos(this.dir);
+      let dy = this.vel * sin(this.dir);
+      this.x += dx;
+      this.y += dy;
+    }
 
     this.x = constrain(this.x, 0, width - 25);
     this.y = constrain(this.y, 0, height - 25);
