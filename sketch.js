@@ -124,6 +124,7 @@ function draw() {
   }
 
   trazoManager.mover();
+  trazoManager.actualizarOpacidad();
   trazoManager.dibujar();
   push();
   imageMode(CENTER);
