@@ -8,6 +8,9 @@ class TrazoManager {
     this.pg = createGraphics(width, height);
     this.trazosData = [];
 
+    this.transicionActiva = false;
+    this.opacidadObjetivo = 255;
+
     this.generarNuevaConfiguracion();
   }
 
@@ -24,9 +27,13 @@ class TrazoManager {
         speed: random(0.5, 2), // Ajustar velocidad de traslación
         rotationSpeed: random(-0.005, 0.005),
         rotationAngle: random(TWO_PI),
+        opacity: 0
       };
       this.trazosData.push(trazo);
     }
+
+    this.transicionActiva = true;
+
   }
 
   mover() {
@@ -68,6 +75,26 @@ class TrazoManager {
     }
   }
 
+
+  actualizarOpacidad() {
+    if (!this.transicionActiva) return;
+
+    let transicionCompletada = true;
+    for (let trazo of this.trazosData) {
+      if (trazo.opacity < this.opacidadObjetivo) {
+        trazo.opacity += 5;
+        transicionCompletada = false;
+      }
+      trazo.opacity = constrain(trazo.opacity, 0, this.opacidadObjetivo);
+    }
+
+    if (transicionCompletada) {
+      this.transicionActiva = false;
+    }
+  }
+
+
+
   dibujar() {
     this.pg.clear();
     let escala = 0.8;
@@ -81,6 +108,9 @@ class TrazoManager {
       this.pg.push();
       this.pg.translate(trazo.x, trazo.y);
       this.pg.rotate(trazo.rotationAngle);
+
+      this.pg.tint(255, trazo.opacity);
+
       this.pg.imageMode(CENTER);
       this.pg.image(imgOriginal, 0, 0, nuevaAnchura, nuevaAltura);
       this.pg.pop();
