@@ -11,7 +11,7 @@ let maxTrazos;
 let trazoManager;
 let bgCumplioElTiempo = true;
 
-let IMPRIMIR = false;
+let IMPRIMIR =false;
 
 let mic;
 let amp;
@@ -56,7 +56,7 @@ function setup() {
   let centerX = width / 2;
   let centerY = height / 2;
 
-  maxTrazos = random(10, 15);
+  maxTrazos = random(8, 12);
 
   for (let i = 0; i < numCaminantes; i++) {
     let angle = (TWO_PI / numCaminantes) * i;
