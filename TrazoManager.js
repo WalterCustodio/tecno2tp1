@@ -7,6 +7,7 @@ class TrazoManager {
     this.margen = margen;
     this.pg = createGraphics(width, height);
     this.trazosData = [];
+    this.trazosUsados = [];
 
     this.transicionActiva = false;
     this.opacidadObjetivo = 255;
@@ -17,9 +18,15 @@ class TrazoManager {
   generarNuevaConfiguracion() {
     console.log("Generando nueva configuración de trazos");
     this.trazosData = [];
-    for (let i = 0; i < this.maxTrazos; i++) {
+    this.trazosUsados = [];
+
+    let imgIndices = [...Array(this.trazos.length).keys()];
+
+    //primera tanda
+    for (let i = 0; i < 10; i++) {
+      let imgIndex = this.obtenerIndiceAleatorio(imgIndices);
       let trazo = {
-        imgIndex: floor(random(this.trazos.length)),
+        imgIndex: imgIndex,
         x: random(this.margen, this.width - this.margen),
         y: random(this.margen, this.height - this.margen),
         angle: random(TWO_PI),
@@ -27,13 +34,40 @@ class TrazoManager {
         speed: random(0.5, 2), // Ajustar velocidad de traslación
         rotationSpeed: random(-0.005, 0.005),
         rotationAngle: random(TWO_PI),
-        opacity: 0
+        opacity: 255
       };
       this.trazosData.push(trazo);
+      this.trazosUsados.push(imgIndex);
+    }
+
+    //segunda tanda
+    let numSegundaTanda = floor(random(4, 6));
+    for (let i = 0; i < numSegundaTanda; i++) {
+      let imgIndex = this.obtenerIndiceAleatorio(imgIndices);
+      let trazo = {
+        imgIndex: imgIndex,
+        x: random(this.margen, this.width - this.margen),
+        y: random(this.margen, this.height - this.margen),
+        angle: random(TWO_PI),
+        radius: random(5, 20),
+        speed: random(0.5, 2), // Ajustar velocidad de traslación
+        rotationSpeed: random(-0.005, 0.005),
+        rotationAngle: random(TWO_PI),
+        opacity: random(0, 100)
+      };
+      this.trazosData.push(trazo);
+      this.trazosUsados.push(imgIndex);
     }
 
     this.transicionActiva = true;
 
+  }
+
+  obtenerIndiceAleatorio(indicesDisponibles) {
+    let indiceAleatorio = floor(random(indicesDisponibles.length));
+    let valor = indicesDisponibles[indiceAleatorio];
+    indicesDisponibles.splice(indiceAleatorio, 1);
+    return valor;
   }
 
   mover() {
@@ -82,7 +116,7 @@ class TrazoManager {
     let transicionCompletada = true;
     for (let trazo of this.trazosData) {
       if (trazo.opacity < this.opacidadObjetivo) {
-        trazo.opacity += 5;
+        trazo.opacity += 1;
         transicionCompletada = false;
       }
       trazo.opacity = constrain(trazo.opacity, 0, this.opacidadObjetivo);
