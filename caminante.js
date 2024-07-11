@@ -23,55 +23,13 @@ class Caminante {
   }
 
   setX(pitch) {
-    this.mausX = map(pitch, 0, 1, 0, width - 50);
+    this.mausX = map(pitch, 0, 1, 0, width - 250);
   }
   setY(vol) {
-    this.mausY = map(vol, 0, 1, height / 2, 0);
+    this.mausY = map(vol, 0, 1, height / 2, 400);
   }
 
-  // mover(caminantes, pitch, vol) {
-  //   this.setY(vol);
-  //   this.setX(pitch);
-
-  //    console.log(this.mausX, this.mausY);
-
-  //    let anguloMouse = atan2(this.mausY - this.y, this.mausX - this.x);
-
-  //    this.dir = anguloMouse;
-
-  //    let dx = this.vel * cos(this.dir);
-  //    let dy = this.vel * sin(this.dir);
-  //    this.x += dx;
-  //    this.y += dy;
-
-
-    //------------MOVIMIENTO HACIA ARRIBA-----------------
-    // if (pitch > 0.5) {
-    //   this.y -= this.vel;
-    // } else {
-    //   let anguloMouse = atan2(this.mausY - this.y, this.mausX - this.x);
-    //   this.dir = anguloMouse;
-
-    //   let dx = this.vel * cos(this.dir);
-    //   let dy = this.vel * sin(this.dir);
-    //   this.x += dx;
-    //   this.y += dy;
-    // }
-//------------MOVIMIENTO HACIA ARRIBA-----------------
-
-
-
-
-
-  //   this.x = constrain(this.x, 0, width - 25);
-  //   this.y = constrain(this.y, 0, height - 25);
-
-  //   this.setMinDist(pitch);
-
-  //   this.repulsion(caminantes);
-  // }
-
-
+ 
 
   mover(caminantes, pitch, vol) {
     this.setY(vol);
@@ -79,7 +37,6 @@ class Caminante {
 
     
     if (pitch > 0.3 && pitch < 0.7) {
-      //espiral
       this.angulo += 0.1;
       let radio= 10;
       this.x += cos(this.angulo) * this.radio;
